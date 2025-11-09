@@ -1,81 +1,200 @@
-# Multilevel Marketing (MLM) System - Binary Tree
+# MLM System - MERN Stack (Binary Tree)
 
-A complete MLM application with binary tree structure where each member can have one left and one right downline member.
+A complete Multilevel Marketing application built with MERN stack (MongoDB, Express, React, Node.js) featuring a binary tree structure where each member can have one left and one right downline member.
 
 ## Features
 
-1. **Member Registration Form**
-   - Name, Email, Mobile, Sponsor Code, Position (Left/Right)
-   - Automatic member code generation
-   - Password encryption
+### Backend (Node.js + Express + MongoDB)
+- RESTful API with JWT authentication
+- Member registration with validation
+- Sponsor code verification
+- Automatic spill logic (recursive placement)
+- Position availability checking
+- Recursive count updates (left_count/right_count)
+- Secure password hashing with bcrypt
 
-2. **Validation Logic**
-   - Sponsor code verification
-   - Position availability check
-   - Automatic spill logic (recursive placement)
+### Frontend (React)
+- Modern React with Hooks
+- React Router for navigation
+- Responsive design
+- Login/Register pages
+- Dashboard
+- Profile view
+- Visual downline tree
 
-3. **Spill Logic**
-   - If selected position is full, automatically finds next available slot
-   - Traverses recursively through the tree
+## Project Structure
 
-4. **Member Management**
-   - Unique member code generation
-   - Left/Right member tracking
-   - Recursive count updates (left_count/right_count)
+```
+mlm-mern-system/
+├── server.js              # Express server
+├── package.json           # Backend dependencies
+├── .env                   # Environment variables
+├── models/
+│   └── Member.js          # MongoDB Member schema
+├── routes/
+│   ├── auth.js            # Authentication routes
+│   └── members.js         # Member routes
+├── middleware/
+│   └── auth.js            # JWT authentication middleware
+├── scripts/
+│   └── seedRoot.js        # Create root member
+└── client/                # React frontend
+    ├── package.json
+    ├── public/
+    │   └── index.html
+    └── src/
+        ├── App.js
+        ├── App.css
+        ├── index.js
+        ├── index.css
+        └── components/
+            ├── Login.js
+            ├── Register.js
+            ├── Dashboard.js
+            ├── Profile.js
+            ├── Downline.js
+            └── Downline.css
+```
 
-5. **Login System**
-   - Secure authentication
-   - Session management
+## Installation & Setup
 
-6. **Dashboard Features**
-   - Profile view with all member details
-   - Downline tree visualization (Left & Right members)
-   - Count tracking for both sides
+### Prerequisites
+- Node.js (v14 or higher)
+- MongoDB (local or Atlas)
+- npm or yarn
 
-## Installation
+### Step 1: Install MongoDB
+Download and install MongoDB from: https://www.mongodb.com/try/download/community
 
-1. **Database Setup**
-   - Import `database.sql` into MySQL
-   - Default admin credentials:
-     - Member Code: ROOT001
-     - Password: password
+Or use MongoDB Atlas (cloud): https://www.mongodb.com/cloud/atlas
 
-2. **Configuration**
-   - Update `config.php` with your database credentials
-   - Default settings:
-     - Host: localhost
-     - User: root
-     - Password: (empty)
-     - Database: mlm_system
+### Step 2: Clone/Setup Project
+```bash
+# Navigate to project directory
+cd mlm-mern-system
 
-3. **Run Application**
-   - Place files in your web server directory (htdocs/www)
-   - Access via browser: http://localhost/your-folder/
+# Install backend dependencies
+npm install
+
+# Install frontend dependencies
+cd client
+npm install
+cd ..
+```
+
+### Step 3: Configure Environment
+Edit `.env` file with your settings:
+```
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/mlm_system
+JWT_SECRET=your_jwt_secret_key_change_this
+```
+
+### Step 4: Create Root Member
+```bash
+node scripts/seedRoot.js
+```
+
+This creates the admin account:
+- Member Code: ROOT001
+- Password: password
+
+### Step 5: Run the Application
+
+**Option 1: Run both servers separately**
+
+Terminal 1 (Backend):
+```bash
+npm run dev
+```
+
+Terminal 2 (Frontend):
+```bash
+cd client
+npm start
+```
+
+**Option 2: Run both together**
+```bash
+npm run dev:full
+```
+
+### Step 6: Access Application
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000
 
 ## Usage
 
-1. **Login**: Use ROOT001 / password for admin access
-2. **Register New Members**: Use register.php with valid sponsor code
+1. **Login**: Use ROOT001 / password
+2. **Register New Members**: Click "Register here" and use ROOT001 as sponsor code
 3. **View Profile**: See all member details and counts
 4. **Check Downline**: Visual tree showing left and right members
 
-## File Structure
+## API Endpoints
 
-- `index.php` - Entry point (redirects to login/dashboard)
-- `login.php` - Login page
-- `register.php` - Member registration with validation
-- `dashboard.php` - Main dashboard
-- `profile.php` - Member profile view
-- `downline.php` - Downline tree visualization
-- `logout.php` - Logout handler
-- `config.php` - Database configuration
-- `database.sql` - Database schema
+### Authentication
+- `POST /api/auth/register` - Register new member
+- `POST /api/auth/login` - Login member
 
-## Technical Details
+### Members (Protected)
+- `GET /api/members/profile` - Get member profile
+- `GET /api/members/downline` - Get downline tree
 
-- PHP 7.4+
-- MySQL 5.7+
-- Session-based authentication
-- Prepared statements for security
-- Recursive tree traversal
-- Transaction support for data integrity
+## Features Explained
+
+### Validation Logic
+1. **Sponsor Code Check**: Verifies sponsor exists in database
+2. **Position Availability**: Checks if left/right position is filled
+3. **Spill Logic**: If position full, recursively finds next available slot
+
+### Spill Logic
+- If sponsor's left position is full and user selected Left → traverse to sponsor's left child
+- Check that child's left position
+- Continue until finding first empty left slot
+- Same logic applies for Right side
+
+### Count Updates
+- When new member joins, update left_count or right_count
+- Recursively update counts upward through the tree
+- Maintains accurate count at each level
+
+## Technologies Used
+
+### Backend
+- Node.js
+- Express.js
+- MongoDB with Mongoose
+- JWT for authentication
+- bcryptjs for password hashing
+
+### Frontend
+- React 18
+- React Router v6
+- Axios for API calls
+- CSS3 for styling
+
+## Default Credentials
+
+- Member Code: ROOT001
+- Password: password
+
+## Troubleshooting
+
+**MongoDB Connection Error**
+- Make sure MongoDB is running
+- Check MONGODB_URI in .env file
+
+**Port Already in Use**
+- Change PORT in .env file
+- Or stop other applications using port 5000/3000
+
+**Cannot Register Members**
+- Make sure you ran seedRoot.js to create ROOT001
+- Verify MongoDB is connected
+
+## Security Notes
+
+- Change JWT_SECRET in production
+- Use strong passwords
+- Enable HTTPS in production
+- Add rate limiting for API endpoints
